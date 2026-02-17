@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Induction Motor — ملاحظات الموتور الحثي</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --accent: #00d4ff;
+      --accent2: #ff6b35;
+      --accent3: #a78bfa;
+      --green: #10b981;
+      --yellow: #fbbf24;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: rgba(0,212,255,0.15);
+      --glow: rgba(0,212,255,0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Cairo', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Glowing orbs */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* HEADER */
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeDown 0.8s ease both;
+    }
+
+    .header-badge {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--accent);
+      border: 1px solid var(--border);
+      padding: 6px 18px;
+      border-radius: 50px;
+      margin-bottom: 20px;
+      background: var(--glow);
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 0%, var(--accent) 60%, var(--accent3) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    .header-sub {
+      color: var(--text-muted);
+      font-size: 1rem;
+      font-weight: 300;
+    }
+
+    /* SECTION CARDS */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.6s ease both;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .section-card:hover {
+      border-color: rgba(0,212,255,0.4);
+      transform: translateY(-2px);
+    }
+
+    .section-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      opacity: 0.05;
+      background: var(--card-color, var(--accent));
+      transform: translate(40px, -40px);
+    }
+
+    .section-card:nth-child(1) { --card-color: #00d4ff; animation-delay: 0.1s; }
+    .section-card:nth-child(2) { --card-color: #ff6b35; animation-delay: 0.15s; }
+    .section-card:nth-child(3) { --card-color: #a78bfa; animation-delay: 0.2s; }
+    .section-card:nth-child(4) { --card-color: #10b981; animation-delay: 0.25s; }
+    .section-card:nth-child(5) { --card-color: #fbbf24; animation-delay: 0.3s; }
+    .section-card:nth-child(6) { --card-color: #f472b6; animation-delay: 0.35s; }
+    .section-card:nth-child(7) { --card-color: #34d399; animation-delay: 0.4s; }
+    .section-card:nth-child(8) { --card-color: #60a5fa; animation-delay: 0.45s; }
+    .section-card:nth-child(9) { --card-color: #fb923c; animation-delay: 0.5s; }
+
+    .card-number {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title .icon {
+      width: 32px;
+      height: 32px;
+      background: var(--glow);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .card-body {
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.9;
+    }
+
+    /* FORMULA BOX */
+    .formula-box {
+      background: var(--surface2);
+      border: 1px solid rgba(167,139,250,0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 14px 0;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--accent3);
+      text-align: center;
+      letter-spacing: 1px;
+      position: relative;
+    }
+
+    .formula-label {
+      position: absolute;
+      top: -10px;
+      right: 14px;
+      background: var(--surface);
+      padding: 0 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+      border-radius: 4px;
+      letter-spacing: 2px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* COMPARISON TABLE */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.9rem;
+    }
+
+    .compare-table th {
+      background: var(--surface2);
+      padding: 12px 16px;
+      text-align: center;
+      font-weight: 600;
+      border-bottom: 2px solid var(--border);
+      color: var(--accent);
+    }
+
+    .compare-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      color: var(--text);
+    }
+
+    .compare-table tr:hover td {
+      background: var(--surface2);
+    }
+
+    .compare-table .label-col {
+      text-align: right;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* POLES TABLE */
+    .poles-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .pole-card {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .pole-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent2);
+      line-height: 1;
+    }
+
+    .pole-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .pole-speed {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--green);
+      margin-top: 8px;
+    }
+
+    /* HIGHLIGHT */
+    .highlight {
+      background: rgba(0,212,255,0.08);
+      border-right: 3px solid var(--accent);
+      padding: 10px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 12px 0;
+      font-size: 0.9rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .highlight.warning {
+      background: rgba(251,191,36,0.08);
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+
+    .highlight.success {
+      background: rgba(16,185,129,0.08);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    /* SLIP DIAGRAM */
+    .slip-visual {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      margin: 16px 0;
+      padding: 20px;
+      background: var(--surface2);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .slip-item {
+      text-align: center;
+    }
+
+    .slip-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .slip-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .slip-arrow {
+      font-size: 1.5rem;
+      color: var(--border);
+    }
+
+    /* SOURCES */
+    .sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .source-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 5px 14px;
+      font-size: 0.78rem;
+      color: var(--accent);
+      text-decoration: none;
+      transition: all 0.2s;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .source-link:hover {
+      background: var(--glow);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .source-link::before {
+      content: '▶';
+      font-size: 0.6rem;
+    }
+
+    /* HOMEWORK BOX */
+    .homework-box {
+      background: linear-gradient(135deg, rgba(251,191,36,0.08), rgba(251,191,36,0.03));
+      border: 1px solid rgba(251,191,36,0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 14px 0;
+      text-align: center;
+    }
+
+    .hw-emoji {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .hw-title {
+      color: var(--yellow);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .hw-desc {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* CONVERSION BOX */
+    .conversion {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 16px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+
+    .conv-item {
+      text-align: center;
+    }
+
+    .conv-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    .conv-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .conv-eq {
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-family: 'Space Mono', monospace;
+      opacity: 0.5;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .poles-grid { grid-template-columns: 1fr; }
+      .slip-visual { flex-direction: column; }
+      .sources { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header>
+    <div class="header-badge">ELECTRICAL ENGINEERING · INDUCTION MOTORS</div>
+    <h1>الموتور الحثي<br>Induction Motor</h1>
+    <p class="header-sub">ملاحظات شاملة · Three-Phase AC Motors</p>
+  </header>
+
+  <!-- 1. RESISTANCES -->
+  <div class="section-card">
+    <div class="card-number">01 / RESISTANCES</div>
+    <div class="card-title">
+      <span class="icon">⚡</span>
+      المقاومات الكهربائية — Electrical Resistances
+    </div>
+    <div class="card-body">
+      <p>المقاومات في دوائر الموتور تلعب دورًا أساسيًا في التحكم بالتيار والعزم. في موتورات الروتور الجرحي، يمكن إضافة مقاومات خارجية على دائرة الروتور للتحكم في:</p>
+      <div class="formula-box">
+        <span class="formula-label">OHM'S LAW</span>
+        V = I × R
+      </div>
+      <div class="formula-box">
+        <span class="formula-label">POWER</span>
+        P = I² × R = V² / R
+      </div>
+      <ul style="margin-top:12px; padding-right:20px; line-height:2.2;">
+        <li>التيار عند بدء التشغيل (Starting Current)</li>
+        <li>عزم التشغيل (Starting Torque)</li>
+        <li>سرعة الروتر (Speed Control)</li>
+      </ul>
+    </div>
+    <div class="sources">
+      <a href="https://www.youtube.com/results?search_query=electrical+resistance+in+motors" target="_blank" class="source-link">YouTube: Resistances in Motors</a>
+      <a href="https://www.khanacademy.org/science/physics/circuits-topic/circuits-resistance/a/what-is-resistance" target="_blank" class="source-link">Khan Academy: Resistance</a>
+      <a href="https://www.allaboutcircuits.com/textbook/direct-current/chpt-2/resistance/" target="_blank" class="source-link">All About Circuits</a>
+    </div>
+  </div>
+
+  <!-- 2. WOUND ROTOR vs SQUIRREL CAGE -->
+  <div class="section-card">
+    <div class="card-number">02 / ROTOR TYPES</div>
+    <div class="card-title">
+      <span class="icon">🔄</span>
+      Wound Rotor (WR / SRIM) vs Squirrel Cage (SCIM)
+    </div>
+    <div class="card-body">
+      <p>يوجد نوعان رئيسيان من الروتور في الموتورات الحثية ثلاثية الأوجه:</p>
+
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>الخاصية</th>
+            <th>🐿 Squirrel Cage (SCIM)</th>
+            <th>🔌 Wound Rotor / Slip Ring (SRIM)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label-col">التركيب</td>
+            <td>قضبان ألومنيوم/نحاس مقصورة</td>
+            <td>ملفات + حلقات انزلاق</td>
+          </tr>
+          <tr>
+            <td class="label-col">التكلفة</td>
+            <td>أرخص ✓</td>
+            <td>أغلى</td>
+          </tr>
+          <tr>
+            <td class="label-col">الصيانة</td>
+            <td>أقل صيانة ✓</td>
+            <td>يحتاج صيانة دورية للفراشي</td>
+          </tr>
+          <tr>
+            <td class="label-col">التحكم في السرعة</td>
+            <td>محدود</td>
+            <td>ممتاز (بمقاومات خارجية) ✓</td>
+          </tr>
+          <tr>
+            <td class="label-col">عزم البدء</td>
+            <td>منخفض</td>
+            <td>عالٍ ✓</td>
+          </tr>
+          <tr>
+            <td class="label-col">الكفاءة</td>
+            <td>عالية ✓</td>
+            <td>أقل (بسبب فقد المقاومات)</td>
+          </tr>
+          <tr>
+            <td class="label-col">الاستخدام</td>
+            <td>أضخم الموتورات الصناعية</td>
+            <td>رافعات، مضخات، محركات ثقيلة</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="highlight">
+        💡 التحكم بالـ Driver (VFD): يمكن التحكم في سرعة الـ SCIM باستخدام Variable Frequency Drive — يغير تردد الجهد المغذي فتتغير سرعة المجال المغناطيسي وبالتالي سرعة الروتور.
+      </div>
+    </div>
+    <div class="sources">
+      <a href="https://www.youtube.com/results?search_query=squirrel+cage+vs+wound+rotor+induction+motor" target="_blank" class="source-link">YouTube: SCIM vs WRIM</a>
+      <a href="https://www.electricaltechnology.org/2013/09/difference-between-slip-ring-wound-rotor.html" target="_blank" class="source-link">Electrical Technology</a>
+      <a href="https://circuitglobe.com/difference-between-squirrel-cage-and-slip-ring-induction-motor.html" target="_blank" class="source-link">Circuit Globe</a>
+    </div>
+  </div>
+
+  <!-- 3. ROTATING MAGNETIC FIELD -->
+  <div class="section-card">
+    <div class="card-number">03 / ROTATING FIELD</div>
+    <div class="card-title">
+      <span class="icon">🌀</span>
+      المجال المغناطيسي الدوار — Rotating Magnetic Field
+    </div>
+    <div class="card-body">
+      <p>الثلاث فازات (R, Y, B) تمر بتيارات متباعدة بـ 120° تخلق مجالًا مغناطيسيًا دوارًا ثابت المقدار يدور بسرعة متزامنة <strong style="color:var(--accent)">Ns</strong> داخل الستاتور.</p>
+
+      <div class="formula-box">
+        <span class="formula-label">SYNCHRONOUS SPEED</span>
+        Ns = (120 × f) / P
+      </div>
+
+      <p style="margin-top:12px; color:var(--text-muted); font-size:0.88rem;">حيث:</p>
+      <ul style="padding-right:20px; line-height:2.2; color:var(--text-muted); font-size:0.88rem;">
+        <li><strong style="color:var(--text)">Ns</strong> = السرعة التزامنية (RPM)</li>
+        <li><strong style="color:var(--text)">f</strong> = التردد بالهرتز (50 Hz في مصر)</li>
+        <li><strong style="color:var(--text)">P</strong> = عدد الأقطاب (Poles)</li>
+      </ul>
+
+      <div class="poles-grid">
+        <div class="pole-card">
+          <div class="pole-num">2</div>
+          <div class="pole-label">عدد الأقطاب (P=2)</div>
+          <div class="pole-speed">3000 RPM</div>
+        </div>
+        <div class="pole-card">
+          <div class="pole-num">4</div>
+          <div class="pole-label">عدد الأقطاب (P=4)</div>
+          <div class="pole-speed">1500 RPM</div>
+        </div>
+        <div class="pole-card">
+          <div class="pole-num">6</div>
+          <div class="pole-label">عدد الأقطاب (P=6)</div>
+          <div class="pole-speed">1000 RPM</div>
+        </div>
+        <div class="pole-card">
+          <div class="pole-num">8</div>
+          <div class="pole-label">عدد الأقطاب (P=8)</div>
+          <div class="pole-speed">750 RPM</div>
+        </div>
+      </div>
+
+      <div class="highlight success">
+        ✅ P=2 بيعمل 60 لفة في الثانية (3000 RPM ÷ 60 = 50 Hz) — يطابق التردد!
+      </div>
+    </div>
+    <div class="sources">
+      <a href="https://www.youtube.com/results?search_query=rotating+magnetic+field+three+phase" target="_blank" class="source-link">YouTube: Rotating Field 3-Phase</a>
+      <a href="https://www.electricaltechnology.org/2013/11/rotating-magnetic-field.html" target="_blank" class="source-link">Electrical Technology</a>
+      <a href="https://electronics.stackexchange.com/questions/tagged/rotating-magnetic-field" target="_blank" class="source-link">StackExchange</a>
+    </div>
+  </div>
+
+  <!-- 4. HOW THE MOTOR ROTATES -->
+  <div class="section-card">
+    <div class="card-number">04 / OPERATION</div>
+    <div class="card-title">
+      <span class="icon">⚙️</span>
+      كيف بيلف الموتور؟ — How the Motor Rotates
+    </div>
+    <div class="card-body">
+      <p>الموتور الحثي يشتغل على مبدأ <strong style="color:var(--accent)">الحث الكهرومغناطيسي</strong> — Faraday's Law:</p>
+
+      <div style="display:grid; grid-template-columns:1fr; gap:10px; margin:16px 0;">
+        <div style="background:var(--surface2); border-radius:10px; padding:14px; border-right:3px solid var(--accent); text-align:right;">
+          <strong style="color:var(--accent)">① الستاتور</strong><br>
+          <span style="font-size:0.88rem; color:var(--text-muted);">الثلاث فازات تولد مجالًا مغناطيسيًا دوارًا بسرعة Ns</span>
+        </div>
+        <div style="background:var(--surface2); border-radius:10px; padding:14px; border-right:3px solid var(--accent3); text-align:right;">
+          <strong style="color:var(--accent3)">② الحث في الروتور</strong><br>
+          <span style="font-size:0.88rem; color:var(--text-muted);">المجال الدوار يقطع ملفات/قضبان الروتور → يولّد قوة دافعة كهربائية (EMF) → تيار في الروتور</span>
+        </div>
+        <div style="background:var(--surface2); border-radius:10px; padding:14px; border-right:3px solid var(--green); text-align:right;">
+          <strong style="color:var(--green)">③ تضارب المجالات</strong><br>
+          <span style="font-size:0.88rem; color:var(--text-muted);">التيار في الروتور + المجال المغناطيسي → قوة (F = BIL) → يبدأ الروتور في الدوران</span>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <span class="formula-label">FORCE ON CONDUCTOR — ثانوية عامة</span>
+        F = B × L × I
+      </div>
+
+      <div class="highlight warning">
+        ⚠️ لو الروتور وصل لسرعة Ns مفيش تقاطع في المجال → مفيش حث → مفيش تيار → مفيش قوة → الروتور يوقف!
+        <br>لذلك <strong>دايمًا سرعة الروتور Nr &lt; Ns</strong>
+      </div>
+
+      <p style="margin-top:10px; font-size:0.88rem; color:var(--text-muted);">
+        ولأن الروتور يعمل بالحث المغناطيسي اسمه <strong style="color:var(--accent)">Induction Motor</strong>
+      </p>
+    </div>
+    <div class="sources">
+      <a href="https://www.youtube.com/results?search_query=how+induction+motor+works+animation" target="_blank" class="source-link">YouTube: How Induction Motor Works</a>
+      <a href="https://www.khanacademy.org/science/physics/magnetic-forces-and-magnetic-fields/faradays-law/a/what-is-faradays-law" target="_blank" class="source-link">Khan Academy: Faraday's Law</a>
+      <a href="https://www.electrical4u.com/induction-motor-slip/" target="_blank" class="source-link">Electrical4U</a>
+    </div>
+  </div>
+
+  <!-- 5. SLIP -->
+  <div class="section-card">
+    <div class="card-number">05 / SLIP</div>
+    <div class="card-title">
+      <span class="icon">📉</span>
+      الانزلاق — The Slip (s)
+    </div>
+    <div class="card-body">
+      <p>الـ Slip هو الفرق النسبي بين سرعة المجال المغناطيسي وسرعة الروتور:</p>
+
+      <div class="formula-box">
+        <span class="formula-label">SLIP FORMULA</span>
+        s = (Ns − Nr) / Ns
+      </div>
+
+      <div class="slip-visual">
+        <div class="slip-item">
+          <div class="slip-val" style="color:var(--accent)">s = 0</div>
+          <div class="slip-desc">Nr = Ns<br>(مستحيل عمليًا)</div>
+        </div>
+        <div class="slip-arrow">→</div>
+        <div class="slip-item">
+          <div class="slip-val" style="color:var(--green)">s = 1-5%</div>
+          <div class="slip-desc">التشغيل الطبيعي<br>(Full Load)</div>
+        </div>
+        <div class="slip-arrow">→</div>
+        <div class="slip-item">
+          <div class="slip-val" style="color:var(--accent2)">s = 1</div>
+          <div class="slip-desc">Nr = 0<br>(الموتور واقف)</div>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <span class="formula-label">ROTOR SPEED</span>
+        Nr = Ns × (1 − s)
+      </div>
+
+      <div class="formula-box">
+        <span class="formula-label">ANGULAR VELOCITY — الأوميجا</span>
+        ω (rad/s) = 2π × Nr / 60 = 2πNs(1−s) / 60
+      </div>
+
+      <p style="margin-top:12px; font-size:0.88rem; color:var(--text-muted);">مثال: موتور P=4 على 50Hz<br>
+        Ns = 120×50/4 = 1500 RPM<br>
+        عند s=0.04: Nr = 1500×(1-0.04) = 1440 RPM<br>
+        ω = 2π×1440/60 ≈ <strong style="color:var(--accent)">150.8 rad/s</strong>
+      </p>
+    </div>
+    <div class="sources">
+      <a href="https://www.youtube.com/results?search_query=induction+motor+slip+explained" target="_blank" class="source-link">YouTube: Slip Explained</a>
+      <a href="https://www.electrical4u.com/slip-of-induction-motor/" target="_blank" class="source-link">Electrical4U: Slip</a>
+      <a href="https://circuitglobe.com/slip-in-induction-motor.html" target="_blank" class="source-link">Circuit Globe</a>
+    </div>
+  </div>
+
+  <!-- 6. FARADAY -->
+  <div class="section-card">
+    <div class="card-number">06 / FARADAY</div>
+    <div class="card-title">
+      <span class="icon">🧲</span>
+      قانون فاراداي — Faraday's Law
+    </div>
+    <div class="card-body">
+      <p>أساس عمل الموتور الحثي. فاراداي اكتشف أن <strong style="color:var(--accent)">التغير في التدفق المغناطيسي</strong> يولّد قوة دافعة كهربائية (EMF):</p>
+
+      <div class="formula-box">
+        <span class="formula-label">FARADAY'S LAW</span>
+        EMF = −N × dΦ/dt
+      </div>
+
+      <ul style="padding-right:20px; line-height:2.2; margin-top:12px;">
+        <li><strong style="color:var(--accent)">N</strong> = عدد لفات الملف</li>
+        <li><strong style="color:var(--accent)">Φ</strong> = التدفق المغناطيسي (Weber)</li>
+        <li><strong style="color:var(--accent)">dΦ/dt</strong> = معدل التغير في التدفق</li>
+        <li>الإشارة السالبة = قاعدة لينز (Lenz's Law)</li>
+      </ul>
+
+      <div class="highlight">
+        🔑 في الموتور الحثي: المجال الدوار للستاتور يغير التدفق المغناطيسي عبر ملفات الروتور → يولد EMF → يولد تيار → يولد مجال ثاني → تضارب المجالين → دوران
+      </div>
+    </div>
+    <div class="sources">
+      <a href="https://www.youtube.com/results?search_query=faraday%27s+law+of+induction+explained" target="_blank" class="source-link">YouTube: Faraday's Law</a>
+      <a href="https://www.khanacademy.org/science/ap-physics-2/ap-magnetic-forces-and-magnetic-fields/faradays-law-ap/a/faradays-law-review-ap" target="_blank" class="source-link">Khan Academy</a>
+      <a href="https://hyperphysics.phy-astr.gsu.edu/hbase/electric/farlaw.html" target="_blank" class="source-link">HyperPhysics</a>
+    </div>
+  </div>
+
+  <!-- 7. OMEGA -->
+  <div class="section-card">
+    <div class="card-number">07 / ANGULAR VELOCITY</div>
+    <div class="card-title">
+      <span class="icon">🔁</span>
+      السرعة الزاوية — Angular Velocity (ω)
+    </div>
+    <div class="card-body">
+      <p>السرعة الزاوية ω (أوميجا) تعبر عن عدد الراديانات المقطوعة في الثانية:</p>
+
+      <div class="formula-box">
+        <span class="formula-label">ANGULAR VELOCITY</span>
+        ω = 2π × n / 60    (rad/s)
+      </div>
+
+      <div class="formula-box">
+        <span class="formula-label">OR USING SLIP</span>
+        ωs = 2π × Ns / 60  |  ωr = ωs × (1 − s)
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0;">
+        <div style="background:var(--surface2); border-radius:10px; padding:12px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; color:var(--accent); font-size:1.1rem;">ω = 2π × 50</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">السرعة الزاوية للتردد</div>
+          <div style="font-family:'Space Mono',monospace; color:var(--green); font-size:1rem; margin-top:4px;">≈ 314 rad/s</div>
+        </div>
+        <div style="background:var(--surface2); border-radius:10px; padding:12px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; color:var(--accent); font-size:1.1rem;">ω = 2π × 1440/60</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">P=4, s=4%, 50Hz</div>
+          <div style="font-family:'Space Mono',monospace; color:var(--green); font-size:1rem; margin-top:4px;">≈ 150.8 rad/s</div>
+        </div>
+      </div>
+    </div>
+    <div class="sources">
+      <a href="https://www.youtube.com/results?search_query=angular+velocity+RPM+to+rad+per+second" target="_blank" class="source-link">YouTube: ω = 2πN/60</a>
+      <a href="https://www.khanacademy.org/science/physics/torque-angular-momentum/rot-kinematics-ap/v/angular-velocity-and-speed" target="_blank" class="source-link">Khan Academy: Angular Velocity</a>
+    </div>
+  </div>
+
+  <!-- 8. HORSEPOWER -->
+  <div class="section-card">
+    <div class="card-number">08 / UNIT CONVERSION</div>
+    <div class="card-title">
+      <span class="icon">💪</span>
+      الحصان الميكانيكي — Horsepower
+    </div>
+    <div class="card-body">
+      <p>الحصان الميكانيكي (HP) وحدة قياس الطاقة شائعة في الموتورات:</p>
+
+      <div class="conversion">
+        <div class="conv-item">
+          <div class="conv-val">1 HP</div>
+          <div class="conv-label">حصان ميكانيكي</div>
+        </div>
+        <div class="conv-eq">=</div>
+        <div class="conv-item">
+          <div class="conv-val" style="color:var(--green)">746 W</div>
+          <div class="conv-label">وات</div>
+        </div>
+        <div class="conv-eq">=</div>
+        <div class="conv-item">
+          <div class="conv-val" style="color:var(--accent3)">0.746 kW</div>
+          <div class="conv-label">كيلو وات</div>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <span class="formula-label">CONVERSION</span>
+        P (HP) = P (W) / 746   |   P (kW) = P (HP) × 0.746
+      </div>
+
+      <p style="margin-top:12px; font-size:0.88rem; color:var(--text-muted);">
+        📌 أمثلة سريعة:<br>
+        • موتور 5 HP = 5 × 746 = <strong style="color:var(--accent)">3730 W = 3.73 kW</strong><br>
+        • موتور 10 HP = 10 × 746 = <strong style="color:var(--accent)">7460 W = 7.46 kW</strong><br>
+        • موتور 2.2 kW = 2200/746 = <strong style="color:var(--accent)">≈ 2.95 HP</strong>
+      </p>
+    </div>
+    <div class="sources">
+      <a href="https://www.youtube.com/results?search_query=horsepower+to+watt+conversion" target="_blank" class="source-link">YouTube: HP to Watts</a>
+      <a href="https://www.rapidtables.com/convert/power/hp-to-watt.html" target="_blank" class="source-link">RapidTables: HP ↔ Watts</a>
+    </div>
+  </div>
+
+  <!-- 9. HOMEWORK -->
+  <div class="section-card">
+    <div class="card-number">09 / HOMEWORK</div>
+    <div class="card-title">
+      <span class="icon">📝</span>
+      الواجب — Homework
+    </div>
+    <div class="card-body">
+      <div class="homework-box">
+        <span class="hw-emoji">📐</span>
+        <div class="hw-title">حل الأمثلة</div>
+        <div class="hw-desc">تطبيق المعادلات على مسائل عملية — Apply all formulas to numerical problems</div>
+      </div>
+
+      <p style="color:var(--text-muted); font-size:0.88rem; margin-top:12px;">راجع المعادلات التالية في حل الأمثلة:</p>
+      <ul style="padding-right:20px; line-height:2.4; font-size:0.88rem; color:var(--text-muted);">
+        <li><strong style="color:var(--text)">Ns = 120f/P</strong> — السرعة التزامنية</li>
+        <li><strong style="color:var(--text)">s = (Ns−Nr)/Ns</strong> — الانزلاق</li>
+        <li><strong style="color:var(--text)">Nr = Ns(1−s)</strong> — سرعة الروتور</li>
+        <li><strong style="color:var(--text)">ω = 2πN/60</strong> — السرعة الزاوية</li>
+        <li><strong style="color:var(--text)">F = BLI</strong> — القوة على الموصل</li>
+        <li><strong style="color:var(--text)">P(W) = HP × 746</strong> — تحويل وحدات</li>
+      </ul>
+
+      <div class="sources">
+        <a href="https://www.youtube.com/results?search_query=induction+motor+problems+solved" target="_blank" class="source-link">YouTube: Solved Problems</a>
+        <a href="https://www.electrical4u.com/induction-motor-slip/" target="_blank" class="source-link">Practice Problems</a>
+        <a href="https://www.khanacademy.org/science/physics" target="_blank" class="source-link">Khan Academy Physics</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Induction Motor Notes · Three-Phase AC Motors · &copy; 2025</p>
+    <p style="margin-top:6px; font-size:0.7rem;">Ns = 120f/P · s = (Ns−Nr)/Ns · F = BLI · 1HP = 746W</p>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -322,6 +322,294 @@ footer{text-align:center;padding:2rem 1.5rem;color:var(--muted);font-size:.8rem;
           <!-- pin labels (right) -->
           <text x="487" y="77"  fill="#f7931a" font-size="10" font-family="monospace" text-anchor="end">─ Q</text>
           <text x="487" y="127" fill="#38bdf8" font-size="10" font-family="monospace" text-anchor="end">─ CV</text>
+          <!-#search{
+  margin-right:auto;background:var(--sur);border:1px solid var(--bdr);
+  color:var(--txt);font-family:'Cairo',sans-serif;font-size:.85rem;
+  padding:.35rem .85rem;border-radius:8px;width:min(200px,38vw);transition:border-color .2s;
+}
+#search:focus{outline:none;border-color:var(--acc)}
+#search::placeholder{color:var(--muted)}
+/* LAYOUT */
+.wrap{position:relative;z-index:1;display:grid;grid-template-columns:var(--sidebar-w) 1fr;padding-top:var(--header-h);min-height:100vh}
+/* SIDEBAR */
+aside{
+  position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));
+  overflow-y:auto;overflow-x:hidden;border-left:1px solid var(--bdr);
+  background:var(--sur);padding:1rem 0;scrollbar-width:thin;scrollbar-color:var(--bdr) transparent;
+}
+.aside-title{font-family:'Fira Code',monospace;font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:.2rem 1.1rem .4rem}
+.nav-item{display:flex;align-items:center;gap:.5rem;padding:.45rem 1.1rem;color:var(--muted);text-decoration:none;font-size:.82rem;border-right:3px solid transparent;transition:all .15s}
+.nav-item:hover,.nav-item.active{color:var(--acc);background:rgba(0,201,167,.07);border-right-color:var(--acc)}
+.nav-num{font-family:'Fira Code',monospace;font-size:.68rem;color:var(--acc);font-weight:600;min-width:20px}
+/* MAIN */
+main{padding:1.75rem 1.75rem 5rem;min-width:0}
+/* BOTTOM NAV — mobile only */
+.bnav{display:none}
+/* HERO */
+.hero{
+  background:linear-gradient(135deg,#0c1f1a,#0b0f14 55%,#150c28);
+  border:1px solid var(--bdr);border-radius:16px;padding:2.25rem 2rem;margin-bottom:2rem;
+  position:relative;overflow:hidden;
+}
+.hero::after{content:'S7-1200';position:absolute;left:-10px;bottom:-15px;font-family:'Fira Code',monospace;font-size:5.5rem;font-weight:900;color:rgba(0,201,167,.04);pointer-events:none;white-space:nowrap;line-height:1}
+.hero-sub{font-family:'Fira Code',monospace;font-size:.7rem;letter-spacing:2px;color:var(--acc);margin-bottom:.4rem}
+.hero h1{font-size:1.75rem;font-weight:900;margin-bottom:.6rem}
+.hero p{color:var(--muted);margin-bottom:.9rem;max-width:560px}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{font-family:'Fira Code',monospace;font-size:.7rem;background:rgba(56,189,248,.08);color:var(--info);border:1px solid rgba(56,189,248,.2);padding:2px 9px;border-radius:4px}
+/* LESSON */
+.lesson{background:var(--sur);border:1px solid var(--bdr);border-radius:14px;margin-bottom:1.75rem;overflow:hidden;scroll-margin-top:calc(var(--header-h) + 10px);transition:border-color .2s}
+.lesson:hover{border-color:rgba(0,201,167,.2)}
+.lh{display:flex;align-items:center;gap:.8rem;padding:1rem 1.5rem;border-bottom:1px solid var(--bdr);background:var(--sur2);cursor:pointer;user-select:none}
+.lnum{font-family:'Fira Code',monospace;font-size:.68rem;font-weight:700;color:var(--bg);background:var(--acc);padding:2px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.ltitle{font-size:1rem;font-weight:700;flex:1}
+.ti{color:var(--muted);font-size:.75rem;transition:transform .25s;flex-shrink:0;display:none}
+.lesson.collapsed .ti{transform:rotate(-90deg)}
+.lbody{padding:1.5rem}
+.lesson.collapsed .lbody{display:none}
+/* BLOCKS */
+.blk{background:#080d12;border:1px solid var(--bdr);border-radius:10px;padding:1.2rem 1.3rem;margin-bottom:1rem;position:relative}
+.blk:last-child{margin-bottom:0}
+.blk-lbl{position:absolute;top:-10px;right:1rem;font-family:'Fira Code',monospace;font-size:.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 9px;border-radius:10px}
+.bi  {background:#0f2233;color:var(--info); border:1px solid rgba(56,189,248,.3)}
+.bg  {background:#092419;color:var(--acc);  border:1px solid rgba(0,201,167,.3)}
+.bo  {background:#231400;color:var(--acc2); border:1px solid rgba(247,147,26,.3)}
+.bp  {background:#120b22;color:#a78bfa;    border:1px solid rgba(167,139,250,.3)}
+.bok {background:#0a1f10;color:var(--ok);   border:1px solid rgba(74,222,128,.3)}
+.bw  {background:#1f1600;color:var(--warn); border:1px solid rgba(251,191,36,.3)}
+.bref{background:#0d0d1f;color:#94a3b8;    border:1px solid #1e2840}
+ul.lst{list-style:none;padding-right:1rem}
+ul.lst li{padding:.27rem 0;position:relative;line-height:1.75}
+ul.lst li::before{content:'▸';position:absolute;right:-1rem;color:var(--acc);font-size:.78rem}
+/*
+  ── BIDI FIX ──────────────────────────────────────────────
+  When <code> (LTR) appears inside RTL Arabic text, the
+  browser's Unicode Bidi Algorithm can scramble surrounding
+  word order.  unicode-bidi:isolate treats each element as
+  its own directional context, leaving the Arabic words in
+  their correct RTL order.
+  ─────────────────────────────────────────────────────────
+*/
+code{
+  font-family:'Fira Code',monospace;font-size:.83em;
+  background:rgba(0,201,167,.1);color:var(--acc);
+  padding:1px 6px;border-radius:4px;border:1px solid rgba(0,201,167,.2);
+  unicode-bidi:isolate;direction:ltr;display:inline-block;vertical-align:baseline;
+}
+code.or{background:rgba(247,147,26,.1);color:var(--acc2);border-color:rgba(247,147,26,.2)}
+code.pu{background:rgba(167,139,250,.1);color:#a78bfa;border-color:rgba(167,139,250,.2)}
+code.in{background:rgba(56,189,248,.1);color:var(--info);border-color:rgba(56,189,248,.2)}
+/* English phrase within Arabic sentence */
+.en{unicode-bidi:isolate;direction:ltr;display:inline-block}
+/* FORMULA */
+.formula{
+  font-family:'Fira Code',monospace;font-size:.84rem;
+  background:#04080c;border:1px solid rgba(167,139,250,.3);
+  color:#a78bfa;padding:.85rem 1.1rem;border-radius:8px;margin:.75rem 0;
+  direction:ltr;text-align:left;overflow-x:auto;white-space:pre;
+  -webkit-overflow-scrolling:touch;
+}
+.formula .cmt{color:#3a5060}
+.formula .kw{color:var(--info)}
+.formula .val{color:var(--acc2)}
+.formula .fn{color:var(--acc)}
+.formula .rc{color:#3ddc84}
+/* DATA TYPES */
+.dt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem;margin:.75rem 0}
+.dt-card{background:var(--sur);border:1px solid var(--bdr);border-radius:8px;padding:.8rem .9rem;text-align:center;transition:border-color .2s}
+.dt-card:hover{border-color:rgba(0,201,167,.3)}
+.dt-name{font-family:'Fira Code',monospace;font-size:.92rem;font-weight:700;color:var(--acc);margin-bottom:.25rem}
+.dt-bits{font-family:'Fira Code',monospace;font-size:.72rem;color:var(--acc2);margin-bottom:.2rem}
+.dt-range{font-size:.7rem;color:var(--muted)}
+/* MEMORY MAP */
+.mmap{background:#04080c;border:1px solid #1e3355;border-radius:9px;padding:1rem 1.2rem;font-family:'Fira Code',monospace;font-size:.82rem;direction:ltr;text-align:left;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mrow{display:flex;align-items:center;gap:.7rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.mrow:last-child{border:none}
+.maddr{color:var(--info);min-width:70px}
+.meq{color:var(--muted)}
+.mval{color:#a78bfa}
+.mnote{color:var(--muted);font-size:.74rem}
+/* LADDER DIAGRAM */
+.ld-wrap{background:#04080c;border:1px solid #1a3020;border-radius:10px;padding:1rem;margin:.75rem 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ld-label{font-family:'Fira Code',monospace;font-size:.7rem;color:var(--muted);margin-bottom:.6rem}
+.ld-svg{display:block;width:100%;min-width:540px}
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:2px}
+.step{display:flex;gap:.8rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04);align-items:flex-start}
+.step:last-child{border:none}
+.sn{font-family:'Fira Code',monospace;font-size:.68rem;font-weight:700;color:var(--acc);background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.2);min-width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px}
+.st{line-height:1.75;flex:1}
+/* TABLE */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:.75rem 0}
+.tbl{width:100%;border-collapse:collapse;font-size:.84rem}
+.tbl th{background:var(--sur2);color:var(--acc);font-family:'Fira Code',monospace;font-size:.72rem;padding:.55rem 1rem;border:1px solid var(--bdr);text-align:right;white-space:nowrap}
+.tbl td{padding:.5rem 1rem;border:1px solid var(--bdr);vertical-align:top}
+.tbl tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.tbl tr:hover td{background:rgba(0,201,167,.04)}
+/* REF */
+.ref-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;color:#64748b;background:#0d1220;border:1px solid #1e2840;padding:2px 9px;border-radius:4px;margin-top:.5rem;font-family:'Fira Code',monospace;direction:ltr;unicode-bidi:isolate}
+.ref-badge::before{content:'📖';font-size:.78rem}
+footer{text-align:center;padding:2rem 1.5rem;color:var(--muted);font-size:.8rem;border-top:1px solid var(--bdr);position:relative;z-index:1}
+/* ═══ MOBILE ═══ */
+@media(max-width:720px){
+  :root{--sidebar-w:0px}
+  .wrap{grid-template-columns:1fr;padding-bottom:var(--bnav-h)}
+  aside{display:none}
+  main{padding:1.25rem .9rem 2rem}
+  .bnav{
+    display:flex;position:fixed;bottom:0;left:0;right:0;z-index:300;
+    height:var(--bnav-h);background:rgba(13,19,26,.97);backdrop-filter:blur(16px);
+    border-top:1px solid var(--bdr);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;
+  }
+  .bnav::-webkit-scrollbar{display:none}
+  .bni{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2px;padding:0 .85rem;min-width:66px;text-decoration:none;color:var(--muted);
+    font-size:.58rem;border-top:2px solid transparent;transition:all .15s;flex-shrink:0;
+  }
+  .bni span:first-child{font-family:'Fira Code',monospace;font-size:.72rem;font-weight:700;color:var(--acc)}
+  .bni.active,.bni:hover{color:var(--acc);border-top-color:var(--acc);background:rgba(0,201,167,.05)}
+  .hero{padding:1.5rem 1.2rem}
+  .hero h1{font-size:1.35rem}
+  .hero::after{font-size:3.5rem}
+  .hbadge{display:none}
+  .ti{display:block}
+  .lbody{padding:1.1rem .9rem}
+  .dt-grid{grid-template-columns:1fr 1fr}
+  .formula{font-size:.74rem}
+  .ld-svg{min-width:520px}
+}
+@media(min-width:721px){
+  .ti{display:none}
+  .lbody{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><b>PLC</b><span> S7-1200</span></div>
+  <div class="hbadge hb-g">TIA Portal</div>
+  <div class="hbadge hb-o">محاضرات ١–٨</div>
+  <input id="search" type="text" placeholder="🔍 ابحث..." oninput="filterLessons(this.value)">
+</header>
+
+<div class="wrap">
+<aside>
+  <div class="aside-title">المحاضرات</div>
+  <a class="nav-item" href="#lec1"><span class="nav-num">01</span>ذاكرة وعدادات</a>
+  <a class="nav-item" href="#lec2"><span class="nav-num">02</span>Mixer Project</a>
+  <a class="nav-item" href="#lec3"><span class="nav-num">03</span>حسابات</a>
+  <a class="nav-item" href="#lec4"><span class="nav-num">04</span>تايمر TONR</a>
+  <a class="nav-item" href="#lec5"><span class="nav-num">05</span>سكينة القطع</a>
+  <a class="nav-item" href="#lec6"><span class="nav-num">06</span>أنواع التايمرات</a>
+  <a class="nav-item" href="#lec7"><span class="nav-num">07</span>Analog Input</a>
+  <a class="nav-item" href="#lec8"><span class="nav-num">08</span>Inverter وفرن</a>
+  <div class="aside-title" style="margin-top:.8rem">مرجع سريع</div>
+  <a class="nav-item" href="#ref-dt"><span class="nav-num">—</span>Data Types</a>
+  <a class="nav-item" href="#ref-tm"><span class="nav-num">—</span>Timers</a>
+  <a class="nav-item" href="#ref-an"><span class="nav-num">—</span>Analog</a>
+</aside>
+
+<main>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-sub">// Siemens S7-1200 · TIA Portal · IEC 61131-3</div>
+  <h1>ملاحظات PLC الشاملة</h1>
+  <p>تغطية كاملة للمحاضرات من 1 إلى 8 — شروحات مبسطة مع مراجع من الإنترنت</p>
+  <div class="chips">
+    <span class="chip">Ladder Logic</span><span class="chip">CTU / CTD</span>
+    <span class="chip">TON / TOF / TONR</span><span class="chip">NORM_X / SCALE_X</span>
+    <span class="chip">Analog I/O</span><span class="chip">VFD Inverter</span>
+    <span class="chip">Shift Register</span><span class="chip">7-Segment</span>
+    <span class="chip">REAL / LREAL</span><span class="chip">Compare / InRange</span>
+  </div>
+</div>
+
+<!-- ══════════ LEC 1 ══════════ -->
+<div class="lesson" id="lec1">
+  <div class="lh" onclick="toggle(this)">
+    <span class="lnum">LEC 01</span>
+    <span class="ltitle">الذاكرة · أنواع البيانات · العداد CTU</span>
+    <span class="ti">▼</span>
+  </div>
+  <div class="lbody">
+
+    <div class="blk" id="ref-dt">
+      <span class="blk-lbl bi">أنواع البيانات — Data Types</span>
+      <div class="dt-grid">
+        <div class="dt-card"><div class="dt-name">BOOL</div><div class="dt-bits">1-bit</div><div class="dt-range">0 أو 1 فقط</div></div>
+        <div class="dt-card"><div class="dt-name">BYTE</div><div class="dt-bits">8-bit</div><div class="dt-range">0 → 255</div></div>
+        <div class="dt-card"><div class="dt-name">WORD</div><div class="dt-bits">16-bit</div><div class="dt-range">0 → 65,535</div></div>
+        <div class="dt-card"><div class="dt-name">INT</div><div class="dt-bits">16-bit signed</div><div class="dt-range">−32,768 → +32,767</div></div>
+        <div class="dt-card"><div class="dt-name">UINT</div><div class="dt-bits">16-bit unsigned</div><div class="dt-range">0 → 65,535</div></div>
+        <div class="dt-card"><div class="dt-name">DWORD</div><div class="dt-bits">32-bit</div><div class="dt-range">0 → 4,294,967,295</div></div>
+        <div class="dt-card"><div class="dt-name">DINT</div><div class="dt-bits">32-bit signed</div><div class="dt-range">±2.1 مليار</div></div>
+        <div class="dt-card"><div class="dt-name">REAL</div><div class="dt-bits">32-bit float</div><div class="dt-range">أرقام عشرية</div></div>
+        <div class="dt-card"><div class="dt-name">LREAL</div><div class="dt-bits">64-bit float</div><div class="dt-range">دقة أعلى (Double)</div></div>
+      </div>
+      <div class="blk bref" style="margin-top:.75rem">
+        <span class="blk-lbl bref">من المرجع</span>
+        <p>في الـ <code>S7-1200</code>، الـ <code>REAL</code> هو 32-bit ويُستخدم لتخزين الأعداد العشرية وفق معيار <span class="en">IEEE 754</span>. أي قيمة تتضمن كسوراً — مثل ناتج <code>NORMALIZE</code> — يجب أن تُخزَّن في متغير <code>REAL</code> أو <code>LREAL</code>.</p>
+        <div class="ref-badge">toolingu.com — Ladder Diagram Timers and Counters for Siemens PLCs</div>
+      </div>
+    </div>
+
+    <div class="blk">
+      <span class="blk-lbl bp">هيكل الذاكرة — Memory Map</span>
+      <div class="mmap">
+        <div class="mrow"><span class="maddr">MW0</span><span class="meq">=</span><span class="mval">MB0 (Most) + MB1 (Least)</span><span class="mnote">// Word = 2 Bytes</span></div>
+        <div class="mrow"><span class="maddr">MD0</span><span class="meq">=</span><span class="mval">MW0 + MW2</span><span class="mnote">// Double Word = 4 Bytes</span></div>
+        <div class="mrow"><span class="maddr">QB5+QB6</span><span class="meq">→</span><span class="mval">QW5</span><span class="mnote">// Output Word</span></div>
+        <div class="mrow"><span class="maddr">IW100</span><span class="meq">=</span><span class="mval">Analog Input Word</span><span class="mnote">// IB100 + IB101</span></div>
+        <div class="mrow"><span class="maddr">QW80</span><span class="meq">=</span><span class="mval">Analog Output Word</span><span class="mnote">// → Inverter / VFD</span></div>
+      </div>
+      <p style="margin-top:.6rem;font-size:.85rem;color:var(--muted)">⚠️ كلمات الذاكرة <code>MW</code> تتشاركوا في الـ Bytes — استخدم <code>MD</code> لو محتاج Double Word بأمان.</p>
+    </div>
+
+    <!-- CTU BLOCK -->
+    <div class="blk">
+      <span class="blk-lbl bg">العداد CTU — Count Up</span>
+      <p style="margin-bottom:.9rem">
+        الأمر <code>CTU</code> يزوّد القيمة الحالية <code>CV</code> بمقدار 1 في كل مرة يتحول فيها
+        إدخال <code>CU</code> من 0 إلى 1 (<span class="en">Rising Edge</span>).
+        عند وصول <code>CV</code> إلى قيمة الهدف <code>PV</code> يتفعّل الخرج <code>Q</code>.
+      </p>
+
+      <!-- ═══ SVG LADDER — Network 1: CTU ═══ -->
+      <div class="ld-wrap">
+        <div class="ld-label">// Network 1 — العداد CTU (Table Product Example)</div>
+        <svg class="ld-svg" viewBox="0 0 660 215" xmlns="http://www.w3.org/2000/svg">
+          <!-- Power Rails -->
+          <line x1="18" y1="5"  x2="18"  y2="210" stroke="#1a4030" stroke-width="3"/>
+          <line x1="642" y1="5" x2="642" y2="210" stroke="#1a4030" stroke-width="3"/>
+
+          <!-- RUNG A: I0.0 → CU pin -->
+          <line x1="18"  y1="55" x2="68"  y2="55" stroke="#3ddc84" stroke-width="1.5"/>
+          <line x1="68"  y1="42" x2="68"  y2="68" stroke="#3ddc84" stroke-width="1.5"/>
+          <line x1="90"  y1="42" x2="90"  y2="68" stroke="#3ddc84" stroke-width="1.5"/>
+          <text x="79" y="33" fill="#6b8fa0" font-size="11" text-anchor="middle" font-family="monospace">I0.0</text>
+          <line x1="90"  y1="55" x2="295" y2="55" stroke="#3ddc84" stroke-width="1.5"/>
+
+          <!-- RUNG B: MBS → R pin -->
+          <line x1="18"  y1="120" x2="130" y2="120" stroke="#3ddc84" stroke-width="1.5"/>
+          <line x1="130" y1="107" x2="130" y2="133" stroke="#3ddc84" stroke-width="1.5"/>
+          <line x1="152" y1="107" x2="152" y2="133" stroke="#3ddc84" stroke-width="1.5"/>
+          <text x="141" y="96" fill="#6b8fa0" font-size="11" text-anchor="middle" font-family="monospace">MBS</text>
+          <line x1="152" y1="120" x2="295" y2="120" stroke="#3ddc84" stroke-width="1.5"/>
+
+          <!-- CTU BLOCK body -->
+          <rect x="295" y="28" width="200" height="155" rx="5" fill="#08131e" stroke="#38bdf8" stroke-width="1.8"/>
+          <!-- header -->
+          <rect x="295" y="28" width="200" height="28" rx="5" fill="#0f2335"/>
+          <text x="395" y="48" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle" font-family="monospace">CTU</text>
+          <!-- pin labels (left) -->
+          <text x="305" y="62"  fill="#3ddc84" font-size="10" font-family="monospace">CU ─</text>
+          <text x="305" y="127" fill="#3ddc84" font-size="10" font-family="monospace">R  ─</text>
+          <!-- pin labels (right) -->
+          <text x="487" y="77"  fill="#f7931a" font-size="10" font-family="monospace" text-anchor="end">─ Q</text>
+          <text x="487" y="127" fill="#38bdf8" font-size="10" font-family="monospace" text-anchor="end">─ CV</text>
           <!-- PV value -->
           <text x="395" y="168" fill="#f7931a" font-size="11" text-anchor="middle" font-family="monospace">PV = 10</text>
           <!-- Q wire -->
